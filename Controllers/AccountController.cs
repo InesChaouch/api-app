@@ -17,24 +17,24 @@ namespace API.Controllers
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerdto)
     { 
         if (await UserExists(registerdto.Username)) return BadRequest("Username is taken");
+        return Ok();
+    //     using var hmac = new HMACSHA512(); // put using otherwise garbage collector will delete this
 
-        using var hmac = new HMACSHA512(); // put using otherwise garbage collector will delete this
+    //     var user = new AppUser
+    //     {
+    //         UserName = registerdto.Username.ToLower(),
+    //         PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerdto.Password)),
+    //         PasswordSalt = hmac.Key
+    //     };
 
-        var user = new AppUser
-        {
-            UserName = registerdto.Username.ToLower(),
-            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerdto.Password)),
-            PasswordSalt = hmac.Key
-        };
+    //     context.Users.Add(user);
+    //     await context.SaveChangesAsync();
 
-        context.Users.Add(user);
-        await context.SaveChangesAsync();
-
-        return new UserDto
-       {
-        Username = user.UserName,
-        Token = tokenService.CreateToken(user),
-       };
+    //     return new UserDto
+    //    {
+    //     Username = user.UserName,
+    //     Token = tokenService.CreateToken(user),
+    //    };
     }
     public async Task<bool> UserExists(string username){
         return await context.Users.AnyAsync(x => x.UserName.ToLower() == username.ToLower());
