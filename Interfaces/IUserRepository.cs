@@ -1,7 +1,7 @@
 using API.DTOs;
 using API.Entities;
 
-namespace API.Intefaces
+namespace API.Interfaces
 {
     public interface IUserRepository
     {
