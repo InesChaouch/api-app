@@ -7,7 +7,6 @@ using API.Entities;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
@@ -18,11 +17,12 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerdto)
         {
             if (await UserExists(registerdto.Username)) return BadRequest("Username is taken");
-            using var hmac = new HMACSHA512(); // put using otherwise garbage collector will delete this
 
             var user = mapper.Map<AppUser>(registerdto);
 
             user.UserName = registerdto.Username.ToLower();
+
+            using var hmac = new HMACSHA512(); // put using otherwise garbage collector will delete this
             user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerdto.Password));
             user.PasswordSalt = hmac.Key;
 
@@ -33,9 +33,11 @@ namespace API.Controllers
             {
                 Username = user.UserName,
                 Token = tokenService.CreateToken(user),
-                KnownAs = user.KnownAs
+                KnownAs = user.KnownAs,
+                Gender = user.Gender,
             };
         }
+
         public async Task<bool> UserExists(string username)
         {
             return await context.Users.AnyAsync(x => x.UserName.ToLower() == username.ToLower());
@@ -61,10 +63,9 @@ namespace API.Controllers
                 Username = user.UserName,
                 KnownAs = user.KnownAs,
                 Token = tokenService.CreateToken(user),
+                Gender = user.Gender,
                 PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
             };
         }
-
-
     }
 }

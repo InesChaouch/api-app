@@ -20,6 +20,7 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>(); //builder.Services.AddScoped<TokenService>(); this would work just fine but the other one is a common way 
             services.AddScoped<IUserRepository,UserRepository>();
             services.AddScoped<IPhotoService, PhotoService>();
+            services.AddScoped<LogUserActivity>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
             return services;

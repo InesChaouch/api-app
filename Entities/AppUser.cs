@@ -18,6 +18,6 @@ namespace API.Entities
         public string? LookingFor { get; set; }
         public required string City { get; set; }
         public required string Country { get; set; }
-        public List<Photo> Photos { get; set; }= [];
+        public List<Photo> Photos { get; set; }= [];   
     }
 }

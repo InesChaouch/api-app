@@ -4,12 +4,12 @@ using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
@@ -18,9 +18,12 @@ public class UsersController(IUserRepository userRepository, IMapper mapper, IPh
 ) : BaseApiController
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
     {
-        var users = await userRepository.GetMembersAsync();
+        userParams.CurrentUsername = User.GetUsername();
+        var users = await userRepository.GetMembersAsync(userParams);
+
+        Response.AddPaginationHeader(users);
 
         return Ok(users);
     }
@@ -51,6 +54,7 @@ public class UsersController(IUserRepository userRepository, IMapper mapper, IPh
 
         return BadRequest("Failed to update the user");
     }
+
     [HttpPost("add-photo")]
     public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
     {
@@ -74,15 +78,14 @@ public class UsersController(IUserRepository userRepository, IMapper mapper, IPh
 
         return BadRequest("Problem adding photo");
     }
+
     [HttpPut("set-main-photo/{photoId:int}")]
     public async Task<ActionResult<PhotoDto>> SetMainPhoto(int photoId)
     {
         var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
-
         if (user == null) return BadRequest("Could not find user");
 
         var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
-
         if (photo == null || photo.IsMain) return BadRequest("Cannot use this as main photo");
 
         var currentMain = user.Photos.FirstOrDefault(p => p.IsMain);
@@ -90,7 +93,7 @@ public class UsersController(IUserRepository userRepository, IMapper mapper, IPh
 
         photo.IsMain = true;
         if (await userRepository.SaveAllAsync()) return NoContent();
-        return BadRequest("Probem setting main photo");
+        return BadRequest("Probem setting main photo");      
     }
 
     [HttpDelete("delete-photo/{photoId}")]
