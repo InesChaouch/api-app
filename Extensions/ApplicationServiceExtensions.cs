@@ -15,7 +15,7 @@ namespace API.Extensions
             services.AddControllers();
             services.AddDbContext<DataContext>(opt =>
             {
-                opt.UseSqlite(config.GetConnectionString("DefaultConection"));
+                opt.UseSqlServer(config.GetConnectionString("DefaultConnection"));
             });
             services.AddCors();
             services.AddScoped<ITokenService, TokenService>(); //builder.Services.AddScoped<TokenService>(); this would work just fine but the other one is a common way 

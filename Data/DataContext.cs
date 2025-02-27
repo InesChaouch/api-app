@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using API.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Data
@@ -42,13 +37,13 @@ namespace API.Data
                 .HasOne(s => s.SourceUser)
                 .WithMany(l => l.LikedUsers)
                 .HasForeignKey(l => l.SourceUserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
              builder.Entity<UserLike>()
                 .HasOne(s => s.TargetUser)
                 .WithMany(l => l.LikedByUsers)
                 .HasForeignKey(l => l.TargetUserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Message>()
                 .HasOne(s => s.Recipient)

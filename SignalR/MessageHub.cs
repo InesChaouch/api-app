@@ -69,7 +69,7 @@ namespace API.SignalR
                 message.DateRead = DateTime.UtcNow;
             }
             else {
-                var connections = await PresenceTracker.GetConnectionsForUser(recipient.UserName);
+                var connections = await PresenceTracker.GetConnectionsForUser(recipient.UserName!);
                 if(connections != null && connections?.Count != null) 
                     {
                         await presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived", new {username = sender.UserName, knownAs = sender.KnownAs});
